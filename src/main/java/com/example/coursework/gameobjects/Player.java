@@ -1,19 +1,18 @@
-package com.example.coursework.users;
+package com.example.coursework.gameobjects;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Player implements Serializable {
-    public double xPos;
-    public double yPos;
-    private final double g = 9.78;
-    private final double startYSpeed = 50;
+public class Player extends MovableObject {
+
+
+    private final double startYSpeed = 40;
     private final double startXSpeed = 1;
-    private final double dt = 0.15;
+
     private final double maxXSpeed = 7;
-    private double ySpeed;
-    private double xSpeed;
+
     private double acc;
     private boolean isJump;
     private boolean isMoving;
@@ -28,31 +27,16 @@ public class Player implements Serializable {
     }
 
     public void jump() {
-        if (!isJump) {
-            isJump = true;
-            double startPoint = yPos;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    ySpeed -= g * dt;
-                    yPos -= ySpeed * dt;
-
-                    if (yPos > startPoint) {
-                        isJump = false;
-                        ySpeed = startYSpeed;
-                        yPos = startPoint;
-                        cancel();
-                    }
-                }
-            },0, 10);
+        if (hasProp) {
+            hasProp = false;
+            ySpeed = startYSpeed;
         }
     }
 
     public void moveX(int side) {
         if (!isMoving) {
             acc = 3;
-            xSpeed = 0;
+            xSpeed = startXSpeed;
             isMoving = true;
             timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -60,42 +44,53 @@ public class Player implements Serializable {
                 public void run() {
 
                     xSpeed += acc * dt;
+                    double currentX = xPos;
                     xPos += xSpeed * dt * (side);
-//                    System.out.println(xSpeed);
+
                     if (xSpeed > maxXSpeed) {
                         xSpeed = maxXSpeed;
                         acc = 0;
                     }
+
+
+                    for (var immObj : immovableObjects) {
+                        if (((immObj.getY1() - yPos) < EXP
+                                && (immObj.getY2() - yPos) > EXP)
+                                || ((immObj.getY1() - (yPos + playerHeight)) < EXP
+                                && (immObj.getY2() - (yPos + playerHeight)) > EXP)) {
+
+                            int s = side == 1 ? FROM_LEFT : FROM_RIGHT;
+
+                            if (s == FROM_RIGHT) {
+                                double res = collisionCoord(s, currentX, xPos, immObj);
+                                if (Math.abs(res + 100) > EXP) {
+                                    xPos = immObj.getX2();
+
+                                    break;
+                                }
+                            } else {
+                                double res = collisionCoord(s, currentX + playerWidth, xPos + playerWidth, immObj);
+                                if (Math.abs(res + 100) > EXP) {
+                                    xPos = immObj.getX1() - playerWidth;
+                                    break;
+                                }
+                            }
+
+
+                        }
+                    }
                 }
             },0, 10);
         }
-//        xPos-=startXSpeed;
-    }
 
+    }
 
     public void slowDown(int side) {
         if (isMoving) {
             isMoving = false;
             timer.cancel();
-
-//            acc = 3;
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//
-//                    xSpeed -= acc * dt * side;
-//                    xPos -= xSpeed * dt * (side);
-//
-//                    if (Math.abs(xSpeed) < 0.0001) {
-//                        xSpeed = 0;
-//                        acc = 0;
-//                        cancel();
-//                    }
-//                }
-//            },0, 10);
         }
 
     }
 
 }
-

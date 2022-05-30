@@ -1,4 +1,4 @@
-package com.example.coursework.users;
+package com.example.coursework.gameobjects;
 
 public interface GameConst {
 

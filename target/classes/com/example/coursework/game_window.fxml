@@ -5,6 +5,6 @@
 
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursework.controller.GameController">
    <children>
-      <Canvas fx:id="canvas" focusTraversable="true" height="400.0" onKeyPressed="#onKeyPressed" width="600.0" />
+      <Canvas fx:id="canvas" focusTraversable="true" height="400.0" width="600.0" />
    </children>
 </AnchorPane>

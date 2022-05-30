@@ -19,39 +19,28 @@ public class Client {
     public Client() throws IOException {
 
         socket = new Socket();
-
         socket.connect(new InetSocketAddress("localhost", 10101));
         outputStream = new ObjectOutputStream(socket.getOutputStream());
-        outputStream.flush();
         System.out.println("создан поток вывода");
-        receiver = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println("в потоке");
-                    inputStream = new ObjectInputStream(socket.getInputStream());
-                    System.out.println("создан поток ввода");
-                    Object readObject;
-                    while (true) {
-                        if (socket.isClosed()) {
-                            return;
-                        }
-                        try {
-                            if ((readObject = inputStream.readObject()) != null) {
-                                System.out.println("ответ пришел");
-                            }
-                        }catch (EOFException e){
-
-                        }
+        receiver = new Thread(() -> {
+            Object obj;
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream())) {
+                System.out.println("поток ввода клиента создан");
+                while (true) {
+                    if (objectInputStream.available() > 0) {
+                        obj = objectInputStream.readObject();
+                        System.out.println("объект получен");
                     }
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("ошибка чтения объекта");
                 }
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("ошибка получения от клиента сервером");
             }
         });
         receiver.start();
         System.out.println("поток запущен");
+
         send();
+
     }
 
     private synchronized void send() {
