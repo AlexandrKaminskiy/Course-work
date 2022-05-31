@@ -4,12 +4,12 @@ import java.util.*;
 
 public class Player extends MovableObject {
 
-    private final double startYSpeed = 40;
-    private final double startXSpeed = 1;
+    private final transient double startYSpeed = 40;
+    private final transient double startXSpeed = 1;
     private final double maxXSpeed = 7;
-    private double acc;
-    private boolean isMoving;
-    private Timer timer;
+    private transient double acc;
+    private transient boolean isMoving;
+    private transient Timer timer;
     private List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
 
     public List<Bullet> getBullets() {

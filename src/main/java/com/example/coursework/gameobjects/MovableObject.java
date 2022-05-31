@@ -17,21 +17,21 @@ public class MovableObject implements Serializable {
         add(new ImmovableObject(300, 330,300,320));
         add(new ImmovableObject(400, 410,385,400));
     }};
-    protected final byte FROM_LEFT = 0;
-    protected final byte FROM_TOP = 1;
-    protected final byte FROM_RIGHT = 2;
-    protected final byte FROM_BOT = 3;
+    protected final transient  byte FROM_LEFT = 0;
+    protected final transient byte FROM_TOP = 1;
+    protected final transient byte FROM_RIGHT = 2;
+    protected final transient byte FROM_BOT = 3;
 
-    protected final double g = 9.78;
-    protected boolean hasProp;
-    protected final double dt = 0.15;
-    protected final double playerHeight = 15;
-    protected final double playerWidth = 10;
-    protected final double EXP = 0.0001;
+    protected final transient double g = 9.78;
+    protected transient boolean hasProp;
+    protected transient final double dt = 0.15;
+    protected transient final double playerHeight = 15;
+    protected transient final double playerWidth = 10;
+    protected transient final double EXP = 0.0001;
     public double xPos;
     public double yPos;
-    protected double ySpeed;
-    protected double xSpeed;
+    protected transient double ySpeed;
+    protected transient double xSpeed;
 
 
     public MovableObject() {

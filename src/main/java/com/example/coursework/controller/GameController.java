@@ -3,6 +3,7 @@ package com.example.coursework.controller;
 import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
+import com.example.coursework.network.TCPConnection;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -20,8 +21,8 @@ public class GameController {
     private GraphicsContext context;
     private EventHandler<KeyEvent> keyEventHandler;
     private EventHandler<MouseEvent> mouseEventHandler;
-
-
+    private TCPConnection tcpConnection;
+    Player opponent;
     Player player;
     private void draw() {
         context.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -35,6 +36,30 @@ public class GameController {
         for (var bullet : player.getBullets()) {
             context.fillOval(bullet.xPos, bullet.yPos, 3,3);
         }
+        if (opponent != null) {
+            context.fillRect(opponent.xPos, opponent.yPos, 10, 15);
+        }
+    }
+
+    private void receivingObjects() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                opponent = (Player) tcpConnection.receivingObject();
+            }
+        },0,1);
+    }
+
+    private void sendingObjects() {
+        tcpConnection = new TCPConnection();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                tcpConnection.sendObject(player);
+            }
+        },0,1);
     }
 
     @FXML
@@ -53,6 +78,9 @@ public class GameController {
                 draw();
             }
         }, 0, 20);
+        sendingObjects();
+        receivingObjects();
 
     }
+
 }

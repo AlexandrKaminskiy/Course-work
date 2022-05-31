@@ -1,6 +1,8 @@
 package com.example.coursework.gameobjects;
 
-public class ImmovableObject {
+import java.io.Serializable;
+
+public class ImmovableObject implements Serializable {
     private double x1, x2, y1, y2;
 
     public double getX1() {
