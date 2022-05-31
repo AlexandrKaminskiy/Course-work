@@ -1,9 +1,8 @@
 package com.example.coursework.controller;
 
-import com.example.coursework.gameobjects.ImmovableObject;
+import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
-import com.example.coursework.gameobjects.Player;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -11,8 +10,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,6 +30,10 @@ public class GameController {
             double w = immObj.getX2() - immObj.getX1();
             double h = immObj.getY2() - immObj.getY1();
             context.fillRect(immObj.getX1(), immObj.getY1(), w, h);
+        }
+
+        for (var bullet : player.getBullets()) {
+            context.fillOval(bullet.xPos, bullet.yPos, 3,3);
         }
     }
 

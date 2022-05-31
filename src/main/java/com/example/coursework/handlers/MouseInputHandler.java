@@ -14,7 +14,7 @@ public class MouseInputHandler implements EventHandler<MouseEvent> {
     @Override
     public void handle(MouseEvent mouseEvent) {
         if (MouseEvent.MOUSE_CLICKED.equals(mouseEvent.getEventType())) {
-            System.out.println("clicked");
+            player.attack(mouseEvent.getX(),mouseEvent.getY());
         }
     }
 

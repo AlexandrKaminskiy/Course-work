@@ -8,9 +8,14 @@ import java.util.TimerTask;
 
 public class MovableObject implements Serializable {
     public List<ImmovableObject> immovableObjects = new ArrayList<>(){{
-        add(new ImmovableObject(0, 600,400,450));
-        add(new ImmovableObject(100, 130,370,380));
+        add(new ImmovableObject(-100, 700,400,600));
+        add(new ImmovableObject(-100, 0,0,600));
+        add(new ImmovableObject(600, 700,0,400));
+        add(new ImmovableObject(100, 140,370,380));
         add(new ImmovableObject(140, 150,380,400));
+        add(new ImmovableObject(340, 380,350,370));
+        add(new ImmovableObject(300, 330,300,320));
+        add(new ImmovableObject(400, 410,385,400));
     }};
     protected final byte FROM_LEFT = 0;
     protected final byte FROM_TOP = 1;
@@ -30,6 +35,7 @@ public class MovableObject implements Serializable {
 
 
     public MovableObject() {
+        hasProp = false;
         gravityImpact();
     }
     protected void gravityImpact() {
@@ -39,8 +45,9 @@ public class MovableObject implements Serializable {
             public void run() {
                 double currentY = yPos;
                 if (!hasProp) {
-                    System.out.println(ySpeed);
+                    System.out.println(yPos);
                     ySpeed -= g * dt;
+
                     yPos -= ySpeed * dt;
 
                     for (var immObj : immovableObjects) {
@@ -55,29 +62,38 @@ public class MovableObject implements Serializable {
                         }
                     }
                     checkProp(currentY);
-                }
 
+                }
             }
         },0,10);
-
     }
-    private void checkProp(double currentY) {
-        for (var immObj : immovableObjects) {
-            if ((immObj.getX1() < xPos && immObj.getX2() > xPos) ||
-                    (immObj.getX1() < xPos + playerWidth && immObj.getX2() > xPos + playerWidth)) {
 
-                double res = collisionCoord(FROM_TOP, currentY + playerHeight, yPos + playerHeight, immObj);
+    protected void checkProp(double currentY) {
+        for (var immObj : immovableObjects) {
+            if (overProp(immObj)) {
+                double res = collisionCoord(FROM_TOP, currentY + playerHeight - 0.2, yPos + playerHeight, immObj);
                 if (Math.abs(res + 100) > EXP) {
                     yPos = immObj.getY1() - playerHeight;
                     hasProp = true;
-                    System.out.println("есть опора");
                     return;
                 }
             }
         }
         hasProp = false;
-        System.out.println("нет опоры");
+
     }
+
+    private boolean overProp(ImmovableObject immObj) {
+        if (immObj.getX1() < xPos && immObj.getX2() > xPos) return true;
+        if (immObj.getX1() < xPos + playerWidth && immObj.getX2() > xPos + playerWidth) return true;
+
+        if (immObj.getX1() > xPos && immObj.getX1() < xPos + playerWidth) return true;
+        if (immObj.getX2() > xPos && immObj.getX2() < xPos + playerWidth) return true;
+
+        if (immObj.getX1() == xPos && immObj.getX2() == xPos + playerWidth) return true;
+        return false;
+    }
+
     protected double collisionCoord(int side, double curCrd, double futCrd, ImmovableObject immObj) {
         double c = 0;
         switch (side) {

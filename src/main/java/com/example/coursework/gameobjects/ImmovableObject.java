@@ -26,12 +26,4 @@ public class ImmovableObject {
         this.y2 = y2;
     }
 
-    public boolean hasCollision(double x, double y) {
-        if (x > x1 && x < x2 && y > y1 && y < y2) {
-            return true;
-        }
-        return false;
-    }
-
-
 }
