@@ -3,7 +3,7 @@ package com.example.coursework.controller;
 import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
-import com.example.coursework.network.TCPConnection;
+import com.example.coursework.network.UDPConnection;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -11,6 +11,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,7 +23,7 @@ public class GameController {
     private GraphicsContext context;
     private EventHandler<KeyEvent> keyEventHandler;
     private EventHandler<MouseEvent> mouseEventHandler;
-    private TCPConnection tcpConnection;
+    private UDPConnection UDPConnection;
     Player opponent;
     Player player;
     private void draw() {
@@ -46,18 +48,26 @@ public class GameController {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                opponent = (Player) tcpConnection.receivingObject();
+                try {
+                    opponent = (Player) UDPConnection.receivingObject();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         },0,1);
     }
 
     private void sendingObjects() {
-        tcpConnection = new TCPConnection();
+        try {
+            UDPConnection = new UDPConnection(2222,1111);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                tcpConnection.sendObject(player);
+                UDPConnection.sendObject(player);
             }
         },0,1);
     }
