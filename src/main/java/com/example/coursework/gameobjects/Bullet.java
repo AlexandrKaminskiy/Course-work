@@ -10,7 +10,7 @@ public class Bullet extends MovableObject {
     private boolean nextIterDelete;
     private double mouseX;
     private double mouseY;
-    Player player;
+    private Player player;
     public boolean isPresent() {
         return isPresent;
     }
@@ -24,9 +24,11 @@ public class Bullet extends MovableObject {
         this.mouseX = x2;
         this.mouseY = y2;
         double c = Math.sqrt((x2 - x1) * (x2 - x1) + (y1 - y2) * (y1 - y2));
+//        System.out.println(c);
         xSpeed = speed * ((x2 - x1) / c);
         ySpeed = speed * ((y1 - y2) / c);
 
+//        System.out.println(xSpeed + " " + ySpeed);
 
     }
 
@@ -60,16 +62,44 @@ public class Bullet extends MovableObject {
             double y1 = immObj.getY1();
             double y2 = immObj.getY2();
 
-            if (lineIntersect(xPos,yPos,futX,futY,x1,y1,x2,y1)) return true;
-            if (lineIntersect(xPos,yPos,futX,futY,x2,y1,x2,y2)) return true;
-            if (lineIntersect(xPos,yPos,futX,futY,x2,y2,x1,y2)) return true;
-            if (lineIntersect(xPos,yPos,futX,futY,x1,y2,x1,y1)) return true;
+            if (xPos > x1 && xPos < x2 && yPos > y1 && yPos < y2) return true;
+
+            if (lineIntersect(xPos,yPos,futX,futY,x1,y1,x2,y1)) {
+                double dy = Math.abs(yPos - y1);
+                double dx = dy * Math.abs(xPos - futX) / Math.abs(yPos - futY);
+                double dc = Math.sqrt(dx * dx + dy * dy);
+                return true;
+            }
+            if (lineIntersect(xPos,yPos,futX,futY,x2,y1,x2,y2)){
+                double dx = Math.abs(xPos - x2);
+                double dy = dx / Math.abs(xPos - futX) / Math.abs(yPos - futY);
+                double dc = Math.sqrt(dx * dx + dy * dy);
+                return true;
+            }
+            if (lineIntersect(xPos,yPos,futX,futY,x2,y2,x1,y2)) {
+                double dy = Math.abs(yPos - y2);
+                double dx = dy * Math.abs(xPos - futX) / Math.abs(yPos - futY);
+                double dc = Math.sqrt(dx * dx + dy * dy);
+                return true;
+            }
+            if (lineIntersect(xPos,yPos,futX,futY,x1,y2,x1,y1)) {
+                double dx = Math.abs(xPos - x1);
+                double dy = dx / Math.abs(xPos - futX) / Math.abs(yPos - futY);
+                double dc = Math.sqrt(dx * dx + dy * dy);
+                return true;
+            }
 
         }
 
         return false;
     }
 
+    public static void main(String[] args) {
+        new Bullet();
+    }
+    Bullet() {
+        System.out.println(lineIntersect( 3,6,6,1,4,4,8,9));
+    }
     private boolean lineIntersect(double ax1, double ay1, double ax2, double ay2,
                                   double bx1, double by1, double bx2, double by2) {
         double abx11 = ax1 - bx1;

@@ -28,31 +28,7 @@ public class UDPConnection {
         this.oppPort = oppPort;
     }
 
-    public Player receivingObject() throws IOException {
-        byte[] buf = new byte[0];
-        receivedPacket = new DatagramPacket(buf,buf.length);
-        socket.receive(receivedPacket);
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(receivedPacket.getData());
-             ObjectInputStream ois = new ObjectInputStream(bis)) {
-            return (Player) ois.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
-    public void sendObject(Player player) {
-        byte[] receivingDataBuffer = new byte[1024];
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(player);
-            receivingDataBuffer = bos.toByteArray();
-            sendPacket = new DatagramPacket(receivingDataBuffer,receivingDataBuffer.length,oppPort);
-            socket.send(sendPacket);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 }

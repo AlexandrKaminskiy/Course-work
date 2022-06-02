@@ -1,15 +1,19 @@
 package com.example.coursework.gameobjects;
 
+import com.example.coursework.dto.PlayerDto;
+
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public class Player extends MovableObject {
 
     private final transient double startYSpeed = 40;
     private final transient double startXSpeed = 1;
-    private final double maxXSpeed = 7;
+    private final transient double maxXSpeed = 7;
     private transient double acc;
     private transient boolean isMoving;
     private transient Timer timer;
+    private int HP;
     private List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
 
     public List<Bullet> getBullets() {
@@ -106,6 +110,53 @@ public class Player extends MovableObject {
             timer.cancel();
         }
 
+    }
+
+    public byte[] objectToByteArray() {
+        var xPos = doubleToByteArray(this.xPos);
+        var yPos = doubleToByteArray(this.yPos);
+        byte[] res = new byte[bullets.size() * 8 * 2 + 16 + 4];
+        for (int i = 0; i < 16; i++) {
+            if (i < 8) {
+                res[i] = xPos[i];
+            } else {
+                res[i] = yPos[i - 8];
+            }
+        }
+
+        int i = 16;
+        for (var bullet : bullets) {
+            xPos = doubleToByteArray(bullet.xPos);
+            yPos = doubleToByteArray(bullet.yPos);
+            for (int counter = 0; counter < 8; counter++) {
+                res[i] = xPos[counter];
+                i++;
+            }
+
+            for (int counter = 8; counter < 16; counter++) {
+                res[i] = yPos[counter - 8];
+                i++;
+            }
+        }
+        byte[] hp = intToByteArray(this.HP);
+        for (int j = 0; j < 4; j++) {
+            res[i] = hp[j];
+            i++;
+        }
+        return res;
+    }
+
+
+    public byte[] doubleToByteArray(double value) {
+        byte[] bytes = new byte[8];
+        ByteBuffer.wrap(bytes).putDouble(value);
+        return bytes;
+    }
+
+    public byte[] intToByteArray(int value) {
+        byte[] bytes = new byte[4];
+        ByteBuffer.wrap(bytes).putInt(value);
+        return bytes;
     }
 
 }
