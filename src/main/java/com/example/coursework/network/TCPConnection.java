@@ -55,7 +55,7 @@ public class TCPConnection {
         if (av == 0) {
             av = 1024;
         }
-        byte buff[] = new byte[1024];
+        byte buff[] = new byte[56];
         var a = inputStream.read(buff);
         return buff;
     }
@@ -66,6 +66,7 @@ public class TCPConnection {
 
         try {
             outputStream.write(sendingDataBuffer);
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

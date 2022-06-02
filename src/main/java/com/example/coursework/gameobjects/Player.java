@@ -7,23 +7,38 @@ import java.util.*;
 
 public class Player extends MovableObject {
 
-    private final transient double startYSpeed = 40;
-    private final transient double startXSpeed = 1;
-    private final transient double maxXSpeed = 7;
-    private transient double acc;
-    private transient boolean isMoving;
-    private transient Timer timer;
+    private final double startYSpeed = 40;
+    private final double startXSpeed = 1;
+    private final double maxXSpeed = 7;
+    private double acc;
+    private boolean isMoving;
+    private Timer timer;
     private int HP;
+    private int score;
+
     private List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
 
     public List<Bullet> getBullets() {
         return bullets;
     }
 
-    public Player(double xPos, double yPos) {
+    public Player(double xPos, double yPos, PlayerDto opponent) {
+        super(opponent);
         this.xPos = xPos;
         this.yPos = yPos;
         bulletControl();
+        hasAttackedControl();
+    }
+
+    private void hasAttackedControl() {
+        Timer attackedTimer = new Timer();
+        attackedTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(collisionControl.checkPlayerGetDamaged(xPos,yPos))
+                    System.out.println("get damage");;
+            }
+        },0,10);
     }
 
     private void bulletControl() {
@@ -42,7 +57,7 @@ public class Player extends MovableObject {
     }
 
     public void attack(double mouseX, double mouseY) {
-        bullets.add(new Bullet(xPos + playerWidth / 2,yPos + playerHeight / 2,mouseX,mouseY,this));
+        bullets.add(new Bullet(xPos + playerWidth / 2,yPos + playerHeight / 2,mouseX,mouseY,this, opponent));
         System.out.println(bullets.size());
     }
 
@@ -115,7 +130,7 @@ public class Player extends MovableObject {
     public byte[] objectToByteArray() {
         var xPos = doubleToByteArray(this.xPos);
         var yPos = doubleToByteArray(this.yPos);
-        byte[] res = new byte[bullets.size() * 8 * 2 + 16 + 4];
+        byte[] res = new byte[bullets.size() * 8 * 4 + 16 + 4 + 4];
         for (int i = 0; i < 16; i++) {
             if (i < 8) {
                 res[i] = xPos[i];
@@ -126,21 +141,45 @@ public class Player extends MovableObject {
 
         int i = 16;
         for (var bullet : bullets) {
-            xPos = doubleToByteArray(bullet.xPos);
-            yPos = doubleToByteArray(bullet.yPos);
-            for (int counter = 0; counter < 8; counter++) {
-                res[i] = xPos[counter];
-                i++;
-            }
+            byte[] futX;
+            byte[] futY;
+            try {
+                xPos = doubleToByteArray(bullet.xPos);
+                yPos = doubleToByteArray(bullet.yPos);
+                futX = doubleToByteArray(bullet.futX);
+                futY = doubleToByteArray(bullet.futY);
 
-            for (int counter = 8; counter < 16; counter++) {
-                res[i] = yPos[counter - 8];
-                i++;
+                for (int counter = 0; counter < 8; counter++) {
+                    res[i] = xPos[counter];
+                    i++;
+                }
+
+                for (int counter = 8; counter < 16; counter++) {
+                    res[i] = yPos[counter - 8];
+                    i++;
+                }
+
+                for (int counter = 16; counter < 24; counter++) {
+                    res[i] = futX[counter - 16];
+                    i++;
+                }
+
+                for (int counter = 24; counter < 32; counter++) {
+                    res[i] = futY[counter - 24];
+                    i++;
+                }
+            } catch (NullPointerException e) {
             }
         }
         byte[] hp = intToByteArray(this.HP);
         for (int j = 0; j < 4; j++) {
             res[i] = hp[j];
+            i++;
+        }
+
+        byte[] score = intToByteArray(this.score);
+        for (int j = 0; j < 4; j++) {
+            res[i] = score[j];
             i++;
         }
         return res;

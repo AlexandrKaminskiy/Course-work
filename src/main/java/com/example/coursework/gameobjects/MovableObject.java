@@ -1,5 +1,7 @@
 package com.example.coursework.gameobjects;
 
+import com.example.coursework.dto.PlayerDto;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MovableObject implements Serializable {
-    public List<ImmovableObject> immovableObjects = new ArrayList<>(){{
+    public static final List<ImmovableObject> immovableObjects = new ArrayList<>(){{
         add(new ImmovableObject(-100, 700,400,600));
         add(new ImmovableObject(-100, 0,0,600));
         add(new ImmovableObject(600, 700,0,400));
@@ -17,27 +19,31 @@ public class MovableObject implements Serializable {
         add(new ImmovableObject(300, 330,300,320));
         add(new ImmovableObject(400, 410,385,400));
     }};
-    protected final transient byte FROM_LEFT = 0;
-    protected final transient byte FROM_TOP = 1;
-    protected final transient byte FROM_RIGHT = 2;
-    protected final transient byte FROM_BOT = 3;
+    protected final byte FROM_LEFT = 0;
+    protected final byte FROM_TOP = 1;
+    protected final byte FROM_RIGHT = 2;
+    protected final byte FROM_BOT = 3;
 
-    protected final transient double g = 9.78;
-    protected transient boolean hasProp;
-    protected final transient double dt = 0.15;
-    protected final transient double playerHeight = 15;
-    protected final transient double playerWidth = 10;
-    protected final transient double EXP = 0.0001;
+    protected final  double g = 9.78;
+    protected boolean hasProp;
+    protected final double dt = 0.15;
+    public static final double playerHeight = 15;
+    public static final double playerWidth = 10;
+    protected final double EXP = 0.0001;
     public double xPos;
     public double yPos;
-    protected transient double ySpeed;
-    protected transient double xSpeed;
+    protected double ySpeed;
+    protected double xSpeed;
+    protected CollisionControl collisionControl;
+    protected PlayerDto opponent;
+    public MovableObject(PlayerDto opponent) {
+        this.opponent = opponent;
+        collisionControl = new CollisionControl(opponent);
 
-
-    public MovableObject() {
         hasProp = false;
         gravityImpact();
     }
+
     protected void gravityImpact() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {

@@ -57,13 +57,18 @@ public class GameController {
             public void run() {
                 try {
                     byte[] arr = tcpConnection.receivingObject();
-                    opponent = opponent.byteArrayToObject(arr);
-//                    System.out.println(opponent.xPos);
-//                    System.out.println(opponent.yPos);
+                    var opp = opponent.byteArrayToObject(arr);
+                    opponent.xPos = opp.xPos;
+                    opponent.yPos = opp.yPos;
+                    opponent.hp = opp.hp;
+                    opponent.score = opp.score;
+                    opponent.bullets = opp.bullets;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             }
+
         },0,1);
 
     }
@@ -84,7 +89,7 @@ public class GameController {
     @FXML
     void initialize() {
         opponent = new PlayerDto();
-        player = new Player(200, canvas.getHeight() - 50);
+        player = new Player(200, canvas.getHeight() - 50, opponent);
         context = canvas.getGraphicsContext2D();
         keyEventHandler = new KeyInputHandler(player);
         mouseEventHandler = new MouseInputHandler(player);
