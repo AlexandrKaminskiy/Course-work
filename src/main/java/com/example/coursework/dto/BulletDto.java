@@ -1,6 +1,8 @@
 package com.example.coursework.dto;
 
-public class BulletDto {
+import java.io.Serializable;
+
+public class BulletDto implements Serializable {
     public double xPos;
     public double yPos;
     public double futX;
@@ -10,6 +12,5 @@ public class BulletDto {
         this.yPos = yPos;
         this.futX = futX;
         this.futY = futY;
-
     }
 }

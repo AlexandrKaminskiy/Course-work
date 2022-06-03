@@ -30,11 +30,8 @@ public class Bullet extends MovableObject {
         this.mouseX = x2;
         this.mouseY = y2;
         double c = Math.sqrt((x2 - x1) * (x2 - x1) + (y1 - y2) * (y1 - y2));
-//        System.out.println(c);
         xSpeed = speed * ((x2 - x1) / c);
         ySpeed = speed * ((y1 - y2) / c);
-
-//        System.out.println(xSpeed + " " + ySpeed);
 
     }
 

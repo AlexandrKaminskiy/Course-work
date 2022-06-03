@@ -1,6 +1,8 @@
 package com.example.coursework.controller;
 
 import com.example.coursework.dto.PlayerDto;
+import com.example.coursework.dto.PlayerMapper;
+import com.example.coursework.dto.TestClass;
 import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
@@ -13,8 +15,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,9 +26,9 @@ public class GameController {
     private EventHandler<KeyEvent> keyEventHandler;
     private EventHandler<MouseEvent> mouseEventHandler;
     private TCPConnection tcpConnection;
-    PlayerDto opponent;
-    Player player;
-
+    private PlayerDto opponent;
+    private Player player;
+    private PlayerMapper playerMapper;
     private void draw() {
         context.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
         context.fillRect(player.xPos, player.yPos, 10, 15);
@@ -44,7 +44,7 @@ public class GameController {
 
         if (opponent != null) {
             context.fillRect(opponent.xPos, opponent.yPos, 10, 15);
-            for (var bullet : opponent.getBullets()) {
+            for (var bullet : opponent.bullets) {
                 context.fillOval(bullet.xPos, bullet.yPos, 3,3);
             }
         }
@@ -56,20 +56,14 @@ public class GameController {
             @Override
             public void run() {
                 try {
-                    Player opp = tcpConnection.receivingObject(player);
-                    System.out.println(opp);
-                    opponent.xPos = opp.xPos;
-                    opponent.yPos = opp.yPos;
-                    opponent.hp = opp.HP;
-                    opponent.score = opp.score;
-//                    opponent.bullets = opp.bullets;
+                    opponent = tcpConnection.receivingObject(playerMapper.toPlayerDto(player));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
 
-        },0,500);
+        },0,10);
 
     }
 
@@ -77,6 +71,7 @@ public class GameController {
 
     @FXML
     void initialize() {
+        playerMapper = new PlayerMapper();
         opponent = new PlayerDto();
         player = new Player(200, canvas.getHeight() - 50, opponent);
         tcpConnection = new TCPConnection(player);

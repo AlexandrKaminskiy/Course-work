@@ -18,10 +18,6 @@ public class Player extends MovableObject {
 
     public List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
 
-    public Player() {
-
-    }
-
     public List<Bullet> getBullets() {
         return bullets;
     }

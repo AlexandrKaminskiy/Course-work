@@ -1,14 +1,12 @@
 package com.example.coursework.network;
 
+import com.example.coursework.dto.PlayerDto;
+import com.example.coursework.dto.TestClass;
 import com.example.coursework.gameobjects.Player;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TCPConnection {
     private ServerSocket serverSocket;
@@ -29,15 +27,7 @@ public class TCPConnection {
         if (!connect(player)) {
             createServer();
         }
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-
-            }
-        },0, 10);
     }
-
 
 
     private void createServer() {
@@ -59,7 +49,7 @@ public class TCPConnection {
             byte[] sendingBuffer;
             baos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(baos);
-            oos.writeObject(player);
+            oos.writeObject(new PlayerDto());
             sendingBuffer = baos.toByteArray();
             dos.write(sendingBuffer);
             return true;
@@ -68,23 +58,21 @@ public class TCPConnection {
         }
     }
 
-    public Player receivingObject(Player player) throws IOException {
-
+    public PlayerDto receivingObject(PlayerDto player) throws IOException {
         try {
             byte[] receivingBuffer = new byte[1024];
             dis.read(receivingBuffer);
             bais = new ByteArrayInputStream(receivingBuffer);
             ois = new ObjectInputStream(bais);
 
-            Player o = (Player) ois.readObject();
+            PlayerDto o = (PlayerDto) ois.readObject();
 
             byte[] sendingBuffer;
-            baos = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(baos);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(player);
             sendingBuffer = baos.toByteArray();
             dos.write(sendingBuffer);
-
             return o;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

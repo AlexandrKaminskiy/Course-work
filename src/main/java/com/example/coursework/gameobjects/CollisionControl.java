@@ -12,7 +12,6 @@ public class CollisionControl {
     }
 
     public synchronized CollisionsState checkCollision(double futX, double futY, double xPos, double yPos) {
-
         for (var immObj : MovableObject.immovableObjects) {
             double x1 = immObj.getX1();
             double x2 = immObj.getX2();

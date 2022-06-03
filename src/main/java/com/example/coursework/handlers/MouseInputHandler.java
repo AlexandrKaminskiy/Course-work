@@ -17,5 +17,4 @@ public class MouseInputHandler implements EventHandler<MouseEvent> {
             player.attack(mouseEvent.getX(),mouseEvent.getY());
         }
     }
-
 }

@@ -19,6 +19,23 @@ public class MovableObject implements Serializable {
         add(new ImmovableObject(300, 330,300,320));
         add(new ImmovableObject(400, 410,385,400));
     }};
+
+    public double getxPos() {
+        return xPos;
+    }
+
+    public void setxPos(double xPos) {
+        this.xPos = xPos;
+    }
+
+    public double getyPos() {
+        return yPos;
+    }
+
+    public void setyPos(double yPos) {
+        this.yPos = yPos;
+    }
+
     protected final transient byte FROM_LEFT = 0;
     protected final transient byte FROM_TOP = 1;
     protected final transient byte FROM_RIGHT = 2;
