@@ -61,9 +61,6 @@ public class MovableObject implements Serializable {
         gravityImpact();
     }
 
-    public MovableObject() {
-
-    }
 
     protected void gravityImpact() {
         Timer timer = new Timer();

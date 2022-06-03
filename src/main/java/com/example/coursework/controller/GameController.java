@@ -2,7 +2,6 @@ package com.example.coursework.controller;
 
 import com.example.coursework.dto.PlayerDto;
 import com.example.coursework.dto.PlayerMapper;
-import com.example.coursework.dto.TestClass;
 import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
@@ -19,7 +18,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameController {
-
     @FXML
     private Canvas canvas;
     private GraphicsContext context;
@@ -30,6 +28,7 @@ public class GameController {
     private Player player;
     private PlayerMapper playerMapper;
     private void draw() {
+
         context.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
         context.fillRect(player.xPos, player.yPos, 10, 15);
         for (var immObj : player.immovableObjects) {
@@ -48,6 +47,8 @@ public class GameController {
                 context.fillOval(bullet.xPos, bullet.yPos, 3,3);
             }
         }
+        context.fillText("Me " + -opponent.score, 10, 20);
+        context.fillText("Opp " + -player.score, 10, 50);
     }
     private void receivingObjects() {
         Timer timer = new Timer();
@@ -56,14 +57,19 @@ public class GameController {
             @Override
             public void run() {
                 try {
-                    opponent = tcpConnection.receivingObject(playerMapper.toPlayerDto(player));
+                    var opp = tcpConnection.receivingObject(playerMapper.toPlayerDto(player));
+                    opponent.bullets = opp.bullets;
+                    opponent.hp = opp.hp;
+                    opponent.score = opp.score;
+                    opponent.xPos = opp.xPos;
+                    opponent.yPos = opp.yPos;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
 
-        },0,10);
+        },0,2);
 
     }
 

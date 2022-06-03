@@ -15,7 +15,7 @@ public class Bullet extends MovableObject {
     private transient Player player;
     public double futX;
     public double futY;
-
+    private boolean isInit;
     public boolean isPresent() {
         return isPresent;
     }
@@ -32,7 +32,9 @@ public class Bullet extends MovableObject {
         double c = Math.sqrt((x2 - x1) * (x2 - x1) + (y1 - y2) * (y1 - y2));
         xSpeed = speed * ((x2 - x1) / c);
         ySpeed = speed * ((y1 - y2) / c);
-
+        this.futX = xPos + xSpeed * dt;
+        this.futY = yPos - ySpeed * dt;
+        this.isInit = true;
     }
 
     @Override
@@ -42,20 +44,30 @@ public class Bullet extends MovableObject {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                xPos += xSpeed * dt;
-                yPos -= (ySpeed * dt);
-                ySpeed -= g * dt;
-                if (ySpeed < maxYSpeed) {
-                    ySpeed = maxYSpeed;
-                }
-                futX = xPos + xSpeed * dt;
-                futY = yPos - ySpeed * dt;
-                if (nextIterDelete) isPresent = false;
-                if (collisionControl.checkCollision(futX, futY, xPos, yPos).equals(CollisionsState.WITH_IMM) ||
-                    collisionControl.checkCollision(futX, futY, xPos, yPos).equals(CollisionsState.WITH_PLAYER)){
-                    nextIterDelete = true;
-                }
+                if (isInit) {
+                    if (nextIterDelete) {
+                        isPresent = false;
+                        cancel();
+                        return;
+                    }
+                    CollisionsState c = collisionControl.checkCollision(futX, futY, xPos, yPos);
+                    if (c.equals(CollisionsState.WITH_IMM)) {
+                        nextIterDelete = true;
+                        System.out.println("with imm");
+                    } else if (c.equals(CollisionsState.WITH_PLAYER)) {
+                        nextIterDelete = true;
+                        System.out.println("with pl");
+                    }
 
+                    xPos += xSpeed * dt;
+                    yPos -= (ySpeed * dt);
+                    ySpeed -= g * dt;
+                    if (ySpeed < maxYSpeed) {
+                        ySpeed = maxYSpeed;
+                    }
+                    futX = xPos + xSpeed * dt;
+                    futY = yPos - ySpeed * dt;
+                }
             }
         },0, 10);
     }

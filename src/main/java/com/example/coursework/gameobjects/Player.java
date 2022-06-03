@@ -2,8 +2,10 @@ package com.example.coursework.gameobjects;
 
 import com.example.coursework.dto.PlayerDto;
 
-import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player extends MovableObject {
 
@@ -16,7 +18,7 @@ public class Player extends MovableObject {
     public int HP;
     public int score;
 
-    public List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
+    public CopyOnWriteArrayList<Bullet> bullets = new CopyOnWriteArrayList<>();
 
     public List<Bullet> getBullets() {
         return bullets;
@@ -31,14 +33,26 @@ public class Player extends MovableObject {
     }
 
     private void hasAttackedControl() {
-        Timer attackedTimer = new Timer();
-        attackedTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(collisionControl.checkPlayerGetDamaged(xPos,yPos))
-                    System.out.println("get damage");;
+        new Thread(() -> {
+            while (true) {
+                if(collisionControl.checkPlayerGetDamaged(xPos,yPos)) {
+                    System.out.println("get damage");
+                    xPos = 200;
+                    yPos = 50;
+                    hasProp = false;
+                    score--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
             }
-        },0,10);
+        }).start();
+
     }
 
     private void bulletControl() {
@@ -126,85 +140,6 @@ public class Player extends MovableObject {
         }
 
     }
-    public String objectToString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(xPos + " " + yPos + " ");
-        for (var bullet : bullets) {
-            stringBuilder.append(bullet.xPos + " " + bullet.yPos + " ");
-        }
-        stringBuilder.append(HP + " ");
-        stringBuilder.append(score);
-        return String.valueOf(stringBuilder);
-    }
-    public byte[] objectToByteArray() {
-        var xPos = doubleToByteArray(this.xPos);
-        var yPos = doubleToByteArray(this.yPos);
-        byte[] res = new byte[bullets.size() * 8 * 4 + 16 + 4 + 4];
-        for (int i = 0; i < 16; i++) {
-            if (i < 8) {
-                res[i] = xPos[i];
-            } else {
-                res[i] = yPos[i - 8];
-            }
-        }
 
-        int i = 16;
-        for (var bullet : bullets) {
-            byte[] futX;
-            byte[] futY;
-            try {
-                xPos = doubleToByteArray(bullet.xPos);
-                yPos = doubleToByteArray(bullet.yPos);
-                futX = doubleToByteArray(bullet.futX);
-                futY = doubleToByteArray(bullet.futY);
-
-                for (int counter = 0; counter < 8; counter++) {
-                    res[i] = xPos[counter];
-                    i++;
-                }
-
-                for (int counter = 8; counter < 16; counter++) {
-                    res[i] = yPos[counter - 8];
-                    i++;
-                }
-
-                for (int counter = 16; counter < 24; counter++) {
-                    res[i] = futX[counter - 16];
-                    i++;
-                }
-
-                for (int counter = 24; counter < 32; counter++) {
-                    res[i] = futY[counter - 24];
-                    i++;
-                }
-            } catch (NullPointerException e) {
-            }
-        }
-        byte[] hp = intToByteArray(this.HP);
-        for (int j = 0; j < 4; j++) {
-            res[i] = hp[j];
-            i++;
-        }
-
-        byte[] score = intToByteArray(this.score);
-        for (int j = 0; j < 4; j++) {
-            res[i] = score[j];
-            i++;
-        }
-        return res;
-    }
-
-
-    public byte[] doubleToByteArray(double value) {
-        byte[] bytes = new byte[8];
-        ByteBuffer.wrap(bytes).putDouble(value);
-        return bytes;
-    }
-
-    public byte[] intToByteArray(int value) {
-        byte[] bytes = new byte[4];
-        ByteBuffer.wrap(bytes).putInt(value);
-        return bytes;
-    }
 
 }

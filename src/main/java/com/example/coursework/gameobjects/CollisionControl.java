@@ -25,7 +25,7 @@ public class CollisionControl {
             if (toImmObj == -1) {
                 return CollisionsState.WITH_PLAYER;
             }
-            if (toOpponent < toImmObj && toImmObj != -1) {
+            if (toOpponent <= toImmObj && toImmObj != -1) {
                 return CollisionsState.WITH_PLAYER;
             }
         }
@@ -58,7 +58,6 @@ public class CollisionControl {
             double dx = Math.abs(xPos - x1);
             double dy = dx / Math.abs(xPos - futX) / Math.abs(yPos - futY);
             double dc = Math.sqrt(dx * dx + dy * dy);
-            System.out.println(dc);
             return dc;
         }
         return -1;
@@ -72,7 +71,8 @@ public class CollisionControl {
                 double y1 = immObj.getY1();
                 double y2 = immObj.getY2();
                 toImmObj = checkIntersection(bullet.xPos, bullet.yPos, bullet.futX, bullet.futY, x1, y1, x2, y2);
-                if (toImmObj != -1) break;
+                if (toImmObj != -1)
+                    break;
             }
 
             double x1 = xPos;
