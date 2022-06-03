@@ -6,13 +6,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Bullet extends MovableObject {
-    private final double speed = 60;
-    private final double maxYSpeed = -60;
-    private boolean isPresent;
-    private boolean nextIterDelete;
-    private double mouseX;
-    private double mouseY;
-    private Player player;
+    private final transient double speed = 60;
+    private final transient  double maxYSpeed = -60;
+    private transient boolean isPresent;
+    private transient boolean nextIterDelete;
+    private transient double mouseX;
+    private transient double mouseY;
+    private transient Player player;
     public double futX;
     public double futY;
 
@@ -56,7 +56,7 @@ public class Bullet extends MovableObject {
                 if (nextIterDelete) isPresent = false;
                 if (collisionControl.checkCollision(futX, futY, xPos, yPos).equals(CollisionsState.WITH_IMM) ||
                     collisionControl.checkCollision(futX, futY, xPos, yPos).equals(CollisionsState.WITH_PLAYER)){
-                    isPresent = false;
+                    nextIterDelete = true;
                 }
 
             }

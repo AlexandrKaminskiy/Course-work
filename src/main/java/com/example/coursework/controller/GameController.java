@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -48,7 +49,6 @@ public class GameController {
             }
         }
     }
-
     private void receivingObjects() {
         Timer timer = new Timer();
 
@@ -56,40 +56,30 @@ public class GameController {
             @Override
             public void run() {
                 try {
-                    byte[] arr = tcpConnection.receivingObject();
-                    var opp = opponent.byteArrayToObject(arr);
+                    Player opp = tcpConnection.receivingObject(player);
+                    System.out.println(opp);
                     opponent.xPos = opp.xPos;
                     opponent.yPos = opp.yPos;
-                    opponent.hp = opp.hp;
+                    opponent.hp = opp.HP;
                     opponent.score = opp.score;
-                    opponent.bullets = opp.bullets;
+//                    opponent.bullets = opp.bullets;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
 
-        },0,1);
+        },0,500);
 
     }
 
-    private void sendingObjects() {
 
-        tcpConnection = new TCPConnection();
-
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                tcpConnection.sendObject(player);
-            }
-        },0,1);
-    }
 
     @FXML
     void initialize() {
         opponent = new PlayerDto();
         player = new Player(200, canvas.getHeight() - 50, opponent);
+        tcpConnection = new TCPConnection(player);
         context = canvas.getGraphicsContext2D();
         keyEventHandler = new KeyInputHandler(player);
         mouseEventHandler = new MouseInputHandler(player);
@@ -97,7 +87,6 @@ public class GameController {
         canvas.setOnKeyReleased(keyEventHandler);
         canvas.setOnMouseClicked(mouseEventHandler);
         Timer timer = new Timer();
-        sendingObjects();
         receivingObjects();
         timer.schedule(new TimerTask() {
             @Override

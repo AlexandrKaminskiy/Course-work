@@ -44,5 +44,9 @@ public class PlayerDto {
     private int toInt(byte[] bytes) {
         return ByteBuffer.wrap(bytes).getInt();
     }
-
+    public PlayerDto stringToObject(String s) {
+        PlayerDto playerDto = new PlayerDto();
+        String args[] = s.split(" ");
+        return playerDto;
+    }
 }

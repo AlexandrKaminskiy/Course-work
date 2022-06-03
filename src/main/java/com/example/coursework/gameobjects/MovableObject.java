@@ -19,29 +19,33 @@ public class MovableObject implements Serializable {
         add(new ImmovableObject(300, 330,300,320));
         add(new ImmovableObject(400, 410,385,400));
     }};
-    protected final byte FROM_LEFT = 0;
-    protected final byte FROM_TOP = 1;
-    protected final byte FROM_RIGHT = 2;
-    protected final byte FROM_BOT = 3;
+    protected final transient byte FROM_LEFT = 0;
+    protected final transient byte FROM_TOP = 1;
+    protected final transient byte FROM_RIGHT = 2;
+    protected final transient byte FROM_BOT = 3;
 
-    protected final  double g = 9.78;
-    protected boolean hasProp;
-    protected final double dt = 0.15;
-    public static final double playerHeight = 15;
-    public static final double playerWidth = 10;
-    protected final double EXP = 0.0001;
-    public double xPos;
-    public double yPos;
-    protected double ySpeed;
-    protected double xSpeed;
-    protected CollisionControl collisionControl;
-    protected PlayerDto opponent;
+    protected final transient double g = 9.78;
+    protected transient boolean hasProp;
+    protected final transient double dt = 0.15;
+    public static final transient double playerHeight = 15;
+    public static final transient double playerWidth = 10;
+    protected final transient double EXP = 0.0001;
+    public transient double xPos;
+    public transient double yPos;
+    protected transient double ySpeed;
+    protected transient double xSpeed;
+    protected transient CollisionControl collisionControl;
+    protected transient PlayerDto opponent;
     public MovableObject(PlayerDto opponent) {
         this.opponent = opponent;
         collisionControl = new CollisionControl(opponent);
 
         hasProp = false;
         gravityImpact();
+    }
+
+    public MovableObject() {
+
     }
 
     protected void gravityImpact() {

@@ -7,16 +7,20 @@ import java.util.*;
 
 public class Player extends MovableObject {
 
-    private final double startYSpeed = 40;
-    private final double startXSpeed = 1;
-    private final double maxXSpeed = 7;
-    private double acc;
-    private boolean isMoving;
-    private Timer timer;
-    private int HP;
-    private int score;
+    private final transient double startYSpeed = 40;
+    private final transient double startXSpeed = 1;
+    private final transient double maxXSpeed = 7;
+    private transient double acc;
+    private transient boolean isMoving;
+    private transient Timer timer;
+    public int HP;
+    public int score;
 
-    private List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
+    public List<Bullet> bullets = Collections.synchronizedList(new ArrayList<>());
+
+    public Player() {
+
+    }
 
     public List<Bullet> getBullets() {
         return bullets;
@@ -126,7 +130,16 @@ public class Player extends MovableObject {
         }
 
     }
-
+    public String objectToString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(xPos + " " + yPos + " ");
+        for (var bullet : bullets) {
+            stringBuilder.append(bullet.xPos + " " + bullet.yPos + " ");
+        }
+        stringBuilder.append(HP + " ");
+        stringBuilder.append(score);
+        return String.valueOf(stringBuilder);
+    }
     public byte[] objectToByteArray() {
         var xPos = doubleToByteArray(this.xPos);
         var yPos = doubleToByteArray(this.yPos);

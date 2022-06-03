@@ -6,69 +6,90 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TCPConnection {
     private ServerSocket serverSocket;
     private Socket socket;
-    private DataOutputStream outputStream;
-    private DataInputStream inputStream;
-
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
+    private ByteArrayOutputStream baos;
+    private ByteArrayInputStream bais;
+    private DataInputStream dis;
+    private DataOutputStream dos;
     private final int port = 10101;
     private final String ip = "localhost";
 
     public static void main(String[] args) {
-        new TCPConnection();
+        new TCPConnection(null);
     }
-    public TCPConnection(){
-        if (!connect()) {
+    public TCPConnection(Player player){
+        if (!connect(player)) {
             createServer();
         }
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
 
+            }
+        },0, 10);
     }
+
+
 
     private void createServer() {
         try {
             serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private boolean connect() {
+    private boolean connect(Player player) {
         try {
             socket = new Socket(ip,port);
-            outputStream = new DataOutputStream(socket.getOutputStream());
-            inputStream = new DataInputStream(socket.getInputStream());
-
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
+            byte[] sendingBuffer;
+            baos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(player);
+            sendingBuffer = baos.toByteArray();
+            dos.write(sendingBuffer);
             return true;
         } catch (IOException e) {
             return false;
         }
     }
 
-    public byte[] receivingObject() throws IOException {
-        int av = inputStream.available();
-        if (av == 0) {
-            av = 1024;
-        }
-        byte buff[] = new byte[56];
-        var a = inputStream.read(buff);
-        return buff;
-    }
-
-    public void sendObject(Player o) {
-
-        byte[] sendingDataBuffer = o.objectToByteArray();
+    public Player receivingObject(Player player) throws IOException {
 
         try {
-            outputStream.write(sendingDataBuffer);
-            outputStream.flush();
-        } catch (IOException e) {
+            byte[] receivingBuffer = new byte[1024];
+            dis.read(receivingBuffer);
+            bais = new ByteArrayInputStream(receivingBuffer);
+            ois = new ObjectInputStream(bais);
+
+            Player o = (Player) ois.readObject();
+
+            byte[] sendingBuffer;
+            baos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(player);
+            sendingBuffer = baos.toByteArray();
+            dos.write(sendingBuffer);
+
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return null;
     }
+
 }
