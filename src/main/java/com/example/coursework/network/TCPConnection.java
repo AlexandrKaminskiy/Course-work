@@ -21,10 +21,12 @@ public class TCPConnection {
     private final String ip = "localhost";
 
     public static void main(String[] args) {
-        new TCPConnection(null);
+
+        new TCPConnection();
     }
-    public TCPConnection(Player player){
-        if (!connect(player)) {
+
+    public TCPConnection(){
+        if (!connect()) {
             createServer();
         }
     }
@@ -41,7 +43,7 @@ public class TCPConnection {
         }
     }
 
-    private boolean connect(Player player) {
+    private boolean connect() {
         try {
             socket = new Socket(ip,port);
             dos = new DataOutputStream(socket.getOutputStream());

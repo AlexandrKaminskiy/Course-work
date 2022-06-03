@@ -80,7 +80,7 @@ public class GameController {
         playerMapper = new PlayerMapper();
         opponent = new PlayerDto();
         player = new Player(200, canvas.getHeight() - 50, opponent);
-        tcpConnection = new TCPConnection(player);
+        tcpConnection = new TCPConnection();
         context = canvas.getGraphicsContext2D();
         keyEventHandler = new KeyInputHandler(player);
         mouseEventHandler = new MouseInputHandler(player);
