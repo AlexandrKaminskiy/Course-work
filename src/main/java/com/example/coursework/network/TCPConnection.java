@@ -1,15 +1,13 @@
 package com.example.coursework.network;
 
 import com.example.coursework.dto.PlayerDto;
-import com.example.coursework.dto.TestClass;
-import com.example.coursework.gameobjects.Player;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPConnection {
-    private ServerSocket serverSocket;
+    public ServerSocket serverSocket;
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -17,33 +15,29 @@ public class TCPConnection {
     private ByteArrayInputStream bais;
     private DataInputStream dis;
     private DataOutputStream dos;
-    private final int port = 10101;
-    private final String ip = "localhost";
+    private int port;
+    private String ip;
 
-    public static void main(String[] args) {
 
-        new TCPConnection();
+    public TCPConnection(String ip, int port){
+        this.ip = ip;
+        this.port = port;
     }
 
-    public TCPConnection(){
-        if (!connect()) {
-            createServer();
-        }
+    public TCPConnection() {
+
     }
 
+    public void createServer() throws IOException {
 
-    private void createServer() {
-        try {
-            serverSocket = new ServerSocket(port);
-            socket = serverSocket.accept();
-            dos = new DataOutputStream(socket.getOutputStream());
-            dis = new DataInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        serverSocket = new ServerSocket(port);
+        socket = serverSocket.accept();
+        dos = new DataOutputStream(socket.getOutputStream());
+        dis = new DataInputStream(socket.getInputStream());
+
     }
 
-    private boolean connect() {
+    public boolean connect() {
         try {
             socket = new Socket(ip,port);
             dos = new DataOutputStream(socket.getOutputStream());

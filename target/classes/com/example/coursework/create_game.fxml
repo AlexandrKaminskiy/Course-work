@@ -5,11 +5,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="292.0" prefWidth="442.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursework.controller.HostGameController">
    <children>
       <Button fx:id="createGameButton" layoutX="169.0" layoutY="170.0" mnemonicParsing="false" onAction="#createGame" text="Create game" />
-      <TextField layoutX="136.0" layoutY="95.0" />
+      <TextField fx:id="portTextField" layoutX="136.0" layoutY="95.0" />
       <Label layoutX="84.0" layoutY="99.0" text="Port" />
       <Label fx:id="infoLabel" layoutX="183.0" layoutY="229.0" />
    </children>

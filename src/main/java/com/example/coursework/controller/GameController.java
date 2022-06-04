@@ -73,8 +73,6 @@ public class GameController {
 
     }
 
-
-
     @FXML
     void initialize() {
         playerMapper = new PlayerMapper();
