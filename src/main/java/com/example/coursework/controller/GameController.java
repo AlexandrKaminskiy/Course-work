@@ -23,10 +23,15 @@ public class GameController {
     private GraphicsContext context;
     private EventHandler<KeyEvent> keyEventHandler;
     private EventHandler<MouseEvent> mouseEventHandler;
-    private TCPConnection tcpConnection;
+    private final TCPConnection tcpConnection;
     private PlayerDto opponent;
     private Player player;
     private PlayerMapper playerMapper;
+
+    public GameController(TCPConnection tcpConnection) {
+        this.tcpConnection = tcpConnection;
+    }
+
     private void draw() {
 
         context.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
@@ -78,7 +83,7 @@ public class GameController {
         playerMapper = new PlayerMapper();
         opponent = new PlayerDto();
         player = new Player(200, canvas.getHeight() - 50, opponent);
-        tcpConnection = new TCPConnection();
+//        tcpConnection = new TCPConnection();
         context = canvas.getGraphicsContext2D();
         keyEventHandler = new KeyInputHandler(player);
         mouseEventHandler = new MouseInputHandler(player);
@@ -94,5 +99,4 @@ public class GameController {
             }
         }, 0, 20);
     }
-
 }
