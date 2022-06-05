@@ -13,11 +13,24 @@ public class MovableObject implements Serializable {
         add(new ImmovableObject(-100, 700,400,600));
         add(new ImmovableObject(-100, 0,0,600));
         add(new ImmovableObject(600, 700,0,400));
-        add(new ImmovableObject(100, 140,370,380));
-        add(new ImmovableObject(140, 150,380,400));
-        add(new ImmovableObject(340, 380,350,370));
-        add(new ImmovableObject(300, 330,300,320));
-        add(new ImmovableObject(400, 410,385,400));
+        add(new ImmovableObject(0, 20,280,310));
+        add(new ImmovableObject(0, 40,350,400));
+        add(new ImmovableObject(0, 60,180,200));
+        add(new ImmovableObject(55, 75,240,260));
+        add(new ImmovableObject(75, 200,180,260));
+        add(new ImmovableObject(75, 120,120,180));
+        add(new ImmovableObject(120, 160,360,400));
+        add(new ImmovableObject(250, 300,80,110));
+        add(new ImmovableObject(280, 380,190,220));
+        add(new ImmovableObject(350, 380,80,110));
+        add(new ImmovableObject(200, 280,240,280));
+        add(new ImmovableObject(260, 340,350,400));
+        add(new ImmovableObject(400, 460,360,400));
+        add(new ImmovableObject(450, 550,245,320));
+        add(new ImmovableObject(580, 600,210,240));
+        add(new ImmovableObject(530, 550,140,170));
+        add(new ImmovableObject(400, 520,130,190));
+        add(new ImmovableObject(350, 410,300,320));
     }};
 
     public double getxPos() {
@@ -42,7 +55,7 @@ public class MovableObject implements Serializable {
     protected final transient byte FROM_BOT = 3;
 
     protected final transient double g = 9.78;
-    protected transient boolean hasProp;
+    public transient boolean hasProp;
     protected final transient double dt = 0.15;
     public static final transient double playerHeight = 15;
     public static final transient double playerWidth = 10;
@@ -85,26 +98,32 @@ public class MovableObject implements Serializable {
                             }
                         }
                     }
-                    checkProp(currentY);
-
+                    var imm = checkProp(currentY);
+//                    if (imm != null && imm.equals(immovableObjects.get(immovableObjects.size() - 1))){
+//                        new Thread(()->{
+//                            while (!hasProp) {
+//                                checkProp(currentY);
+//                            }
+//                        }).start();
+//                    }
                 }
             }
         },0,10);
     }
 
-    protected void checkProp(double currentY) {
+    protected synchronized ImmovableObject checkProp(double currentY) {
         for (var immObj : immovableObjects) {
             if (overProp(immObj)) {
                 double res = collisionCoord(FROM_TOP, currentY + playerHeight - 0.2, yPos + playerHeight, immObj);
                 if (Math.abs(res + 100) > EXP) {
                     yPos = immObj.getY1() - playerHeight;
                     hasProp = true;
-                    return;
+                    return immObj;
                 }
             }
         }
         hasProp = false;
-
+        return null;
     }
 
     private boolean overProp(ImmovableObject immObj) {

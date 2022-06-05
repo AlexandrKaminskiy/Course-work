@@ -17,7 +17,7 @@ public class Player extends MovableObject {
     private transient Timer timer;
     public int HP;
     public int score;
-
+    public Thread attackedThread;
     public CopyOnWriteArrayList<Bullet> bullets = new CopyOnWriteArrayList<>();
 
     public List<Bullet> getBullets() {
@@ -30,10 +30,11 @@ public class Player extends MovableObject {
         this.yPos = yPos;
         bulletControl();
         hasAttackedControl();
+//        immovableObjects.add(new ImmovableObject(opponent.xPos, opponent.xPos + playerWidth,opponent.yPos, opponent.yPos + playerHeight));
     }
 
     private void hasAttackedControl() {
-        new Thread(() -> {
+        attackedThread = new Thread(() -> {
             while (true) {
                 if(collisionControl.checkPlayerGetDamaged(xPos,yPos)) {
                     System.out.println("get damage");
@@ -51,8 +52,8 @@ public class Player extends MovableObject {
                 } catch (InterruptedException e) {
                 }
             }
-        }).start();
-
+        });
+        attackedThread.start();
     }
 
     private void bulletControl() {

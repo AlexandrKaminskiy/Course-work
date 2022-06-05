@@ -18,16 +18,12 @@ public class TCPConnection {
     private int port;
     private String ip;
 
-
     public TCPConnection(String ip, int port){
         this.ip = ip;
         this.port = port;
     }
 
-
-
     public void createServer(){
-
         try {
             serverSocket = new ServerSocket(port);
             socket = serverSocket.accept();
@@ -59,12 +55,15 @@ public class TCPConnection {
     public PlayerDto receivingObject(PlayerDto player) throws IOException {
         try {
             byte[] receivingBuffer = new byte[1024];
-            dis.read(receivingBuffer);
+            int i = dis.read(receivingBuffer);
+//            System.out.println(i);
+//            System.out.println(Arrays.toString(receivingBuffer));
+            if (i == -1) {
+                throw new IOException();
+            }
             bais = new ByteArrayInputStream(receivingBuffer);
             ois = new ObjectInputStream(bais);
-
             PlayerDto o = (PlayerDto) ois.readObject();
-
             byte[] sendingBuffer;
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -72,21 +71,27 @@ public class TCPConnection {
             sendingBuffer = baos.toByteArray();
             dos.write(sendingBuffer);
             return o;
-        } catch (IOException | ClassNotFoundException e) {
-            if (oos != null) {
-                oos.close();
-            }
-            ois.close();
-            baos.close();
-            bais.close();
-            dis.close();
-            dos.close();
-            socket.close();
-            if (serverSocket != null) {
-                serverSocket.close();
-            }
+        } catch (IOException | ClassNotFoundException | NullPointerException e) {
+            System.out.println("there");
+            close();
             return null;
         }
     }
 
+    public void close() throws IOException {
+        if (oos != null) {
+            oos.close();
+        }
+        ois.close();
+        if (baos != null) {
+            baos.close();
+        }
+        bais.close();
+        dis.close();
+        dos.close();
+        socket.close();
+        if (serverSocket != null) {
+            serverSocket.close();
+        }
+    }
 }

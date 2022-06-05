@@ -4,27 +4,83 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursework.controller.GameController">
    <children>
-      <AnchorPane fx:id="gameAnchor" prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane fx:id="gameAnchor" prefHeight="400.0" prefWidth="600.0" visible="false">
          <children>
+            <ImageView fx:id="image" fitHeight="400.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@back.jpg" />
+               </image>
+            </ImageView>
             <Canvas fx:id="canvas" focusTraversable="true" height="400.0" width="600.0" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="startAnchor" prefHeight="400.0" prefWidth="600.0">
+      <AnchorPane fx:id="startAnchor" prefHeight="383.0" prefWidth="600.0">
          <children>
-            <Button fx:id="createGameButton" layoutX="85.0" layoutY="282.0" mnemonicParsing="false" onAction="#onCreateGame" text="Create game" />
-            <Button fx:id="connectGameButton" layoutX="85.0" layoutY="341.0" mnemonicParsing="false" onAction="#onConnectGame" prefHeight="26.0" prefWidth="84.0" text="Connect" />
-            <Label fx:id="iplabel" layoutX="28.0" layoutY="316.0" prefHeight="18.0" prefWidth="245.0" />
+            <ImageView fitHeight="400.0" fitWidth="600.0" layoutX="-1.0" opacity="0.55" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@1621528103_28-phonoteka_org-p-fon-dlya-igri-les-35.jpg" />
+               </image>
+            </ImageView>
+            <Label layoutX="126.0" layoutY="14.0" prefHeight="102.0" prefWidth="360.0" text="Forest battle">
+               <font>
+                  <Font name="Agency FB" size="84.0" />
+               </font>
+            </Label>
+            <Button fx:id="createGameButton" layoutX="168.0" layoutY="136.0" mnemonicParsing="false" onAction="#onCreateGame" prefHeight="90.0" prefWidth="262.0" text="Create game">
+               <font>
+                  <Font name="Agency FB" size="35.0" />
+               </font></Button>
+            <Button fx:id="connectGameButton" layoutX="169.0" layoutY="245.0" mnemonicParsing="false" onAction="#onConnectGame" prefHeight="81.0" prefWidth="261.0" text="Connect">
+               <font>
+                  <Font name="Agency FB" size="35.0" />
+               </font></Button>
+            <Label fx:id="iplabel" layoutX="169.0" layoutY="340.0" prefHeight="43.0" prefWidth="262.0">
+               <font>
+                  <Font name="Agency FB" size="24.0" />
+               </font></Label>
+            <Label fx:id="winLabel" layoutX="244.0" layoutY="336.0" prefHeight="50.0" prefWidth="112.0" text="You win!" visible="false">
+               <font>
+                  <Font name="Agency FB" size="41.0" />
+               </font>
+            </Label>
+            <Label fx:id="loseLabel" layoutX="240.0" layoutY="336.0" prefHeight="50.0" prefWidth="120.0" text="You lose!" visible="false">
+               <font>
+                  <Font name="Agency FB" size="40.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="connectAnchor" prefHeight="400.0" prefWidth="600.0" visible="false">
          <children>
-            <Button fx:id="connectGameButton" layoutX="237.0" layoutY="200.0" mnemonicParsing="false" onAction="#onConnectGameButton" text="Connect" />
-            <TextField fx:id="ipTextField" layoutX="192.0" layoutY="154.0" />
-            <Label layoutX="159.0" layoutY="158.0" text="IP" />
+            <ImageView fitHeight="400.0" fitWidth="600.0" opacity="0.55" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@1621528103_28-phonoteka_org-p-fon-dlya-igri-les-35.jpg" />
+               </image>
+            </ImageView>
+            <Label layoutX="120.0" layoutY="14.0" prefHeight="102.0" prefWidth="360.0" text="Forest battle">
+               <font>
+                  <Font name="Agency FB" size="84.0" />
+               </font>
+            </Label>
+            <Button fx:id="connectGameButton" layoutX="175.0" layoutY="252.0" mnemonicParsing="false" onAction="#onConnectGameButton" prefHeight="90.0" prefWidth="250.0" text="Connect">
+               <font>
+                  <Font name="Agency FB" size="50.0" />
+               </font></Button>
+            <TextField fx:id="ipTextField" layoutX="147.0" layoutY="143.0" prefHeight="82.0" prefWidth="305.0">
+               <font>
+                  <Font name="Agency FB" size="36.0" />
+               </font></TextField>
+            <Label layoutX="86.0" layoutY="143.0" prefHeight="82.0" prefWidth="67.0" text="IP">
+               <font>
+                  <Font name="Agency FB" size="65.0" />
+               </font></Label>
          </children>
       </AnchorPane>
    </children>

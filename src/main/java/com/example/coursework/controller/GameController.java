@@ -16,12 +16,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GameController {
     @FXML
@@ -33,7 +32,9 @@ public class GameController {
     private PlayerDto opponent;
     private Player player;
     private PlayerMapper playerMapper;
-    private int gameLimit = -10;
+    private int gameLimit = -15;
+    private Thread receivingThread;
+    private String message = new String();
     @FXML
     private AnchorPane anchorPane;
     @FXML
@@ -43,15 +44,34 @@ public class GameController {
     @FXML
     private Label iplabel;
     @FXML
+    private Label winLabel;
+    @FXML
+    private Label loseLabel;
+    @FXML
     private TextField ipTextField;
     @FXML
     private AnchorPane startAnchor;
-
+    private String ipinfo;
+    private int port;
     @FXML
     void onConnectGameButton(ActionEvent event) {
-
+        winLabel.setVisible(false);
+        loseLabel.setVisible(false);
         var strings = ipTextField.getText().split(":");
-
+        if (strings.length == 0) {
+            ipTextField.setText("192.168.56.1:");
+            return;
+        }
+        try {
+            int port = Integer.parseInt(strings[1]);
+            if (port == this.port) {
+                ipTextField.setText("192.168.56.1:");
+                return;
+            }
+        } catch (Exception e) {
+            ipTextField.setText("192.168.56.1:");
+            return;
+        }
         new Thread(()->{
             tcpConnection = new TCPConnection(strings[0],Integer.parseInt(strings[1]));
             tcpConnection.connect();
@@ -71,12 +91,16 @@ public class GameController {
 
     @FXML
     void onCreateGame(ActionEvent event) {
-        int port = (int) (Math.random() * 1000 + 9000);
+        winLabel.setVisible(false);
+        loseLabel.setVisible(false);
+        port = (int) (Math.random() * 1000 + 9000);
         try {
             String localhost = InetAddress.getLocalHost().getHostAddress();
+            iplabel.setVisible(true);
             new Thread(()->{
                 tcpConnection = new TCPConnection(localhost,port);
                 tcpConnection.createServer();
+                iplabel.setVisible(false);
                 initGame();
             }).start();
             iplabel.setText("Game opened at " + localhost + ":" + port);
@@ -84,57 +108,84 @@ public class GameController {
             e.printStackTrace();
         }
     }
+    private void drawEnemyAmogus() {
+        context.setFill(Color.rgb(255,0,0));
+        context.fillRect(opponent.xPos, opponent.yPos, 10, 15);
+        context.setFill(Color.rgb(0,200,255));
+        context.fillRect(opponent.xPos+5, opponent.yPos + 3, 5, 2);
+    }
 
-    private void draw() {
-
-        context.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+    private void drawMyAmogus() {
+        context.setFill(Color.rgb(0,0,255));
         context.fillRect(player.xPos, player.yPos, 10, 15);
-        for (var immObj : player.immovableObjects) {
-            double w = immObj.getX2() - immObj.getX1();
-            double h = immObj.getY2() - immObj.getY1();
-            context.fillRect(immObj.getX1(), immObj.getY1(), w, h);
-        }
-
-        for (var bullet : player.getBullets()) {
-            context.fillOval(bullet.xPos, bullet.yPos, 3,3);
-        }
-
-        if (opponent != null) {
-            context.fillRect(opponent.xPos, opponent.yPos, 10, 15);
-            for (var bullet : opponent.bullets) {
-                context.fillOval(bullet.xPos, bullet.yPos, 3,3);
+        context.setFill(Color.rgb(0,200,255));
+        context.fillRect(player.xPos+5, player.yPos + 3, 5, 2);
+    }
+    private void draw() {
+        try {
+            context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawMyAmogus();
+            context.setFill(Color.rgb(100,100,100));
+            for (var immObj : player.immovableObjects) {
+                double w = immObj.getX2() - immObj.getX1();
+                double h = immObj.getY2() - immObj.getY1();
+                context.fillRect(immObj.getX1(), immObj.getY1(), w, h);
             }
-        }
-        context.fillText("Me " + -opponent.score, 10, 20);
-        context.fillText("Opp " + -player.score, 10, 50);
+
+            context.setFill(Color.rgb(0,0,150));
+            for (var bullet : player.getBullets()) {
+                context.fillOval(bullet.xPos, bullet.yPos, 3, 3);
+            }
+
+            if (opponent != null) {
+                drawEnemyAmogus();
+                context.setFill(Color.rgb(150,0,0));
+                for (var bullet : opponent.bullets) {
+                    context.fillOval(bullet.xPos, bullet.yPos, 3, 3);
+                }
+            }
+            context.setFill(Color.rgb(0,0,0));
+            context.fillText("Me " + -opponent.score, 10, 20);
+            context.fillText("Opponent " + -player.score, 10, 50);
+        } catch (NullPointerException e){}
     }
 
     private void receivingObjects() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
+
+        receivingThread = new Thread(()-> {
+            while (true){
+
                 try {
                     var opp = tcpConnection.receivingObject(playerMapper.toPlayerDto(player));
-                    if (opp == null) {
-                        System.out.println("connection refused");
 
-                        cancel();
-                        return;
-                    }
                     opponent.bullets = opp.bullets;
                     opponent.hp = opp.hp;
                     opponent.score = opp.score;
                     opponent.xPos = opp.xPos;
                     opponent.yPos = opp.yPos;
-                } catch (IOException e) {
+                } catch (Exception e) {
+                    endGame("You winn!");
+                    if (opponent.score == gameLimit) {
+                        showMsg("You win!");
+                    }
+                    if (player.score == gameLimit) {
+                        showMsg("You lose!");
+                    }
+                    return;
+                }
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        },0,2);
+        });
+        receivingThread.start();
     }
 
     void initGame() {
+
+        canvas.setFocusTraversable(true);
         gameAnchor.setVisible(true);
         startAnchor.setVisible(false);
         playerMapper = new PlayerMapper();
@@ -146,41 +197,75 @@ public class GameController {
         canvas.setOnKeyPressed(keyEventHandler);
         canvas.setOnKeyReleased(keyEventHandler);
         canvas.setOnMouseClicked(mouseEventHandler);
-        Timer timer = new Timer();
+
         receivingObjects();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
+
+        new Thread(()->{
+            while (true) {
                 draw();
+                if (!gameAnchor.isVisible()) break;
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 0, 20);
-
-        Timer winTimer = new Timer();
+        }).start();
         receivingObjects();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (opponent.score <= gameLimit) {
-                    canvas.setFocusTraversable(false);
-                    return;
+        new Thread(()->{
+            while (true) {
+                if (opponent != null && opponent.score <= gameLimit) {
+                    endGame("You win!");
+                    showMsg("You win!");
+                    break;
                 }
-                if (player.score <= gameLimit) {
-                    canvas.setFocusTraversable(false);
-                    return;
+                if (player != null && player.score <= gameLimit) {
+                    endGame("You lose!");
+                    showMsg("You lose!");
+                    break;
+                }
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        }, 0, 20);
+        }).start();
     }
+    void showMsg(String message) {
+        if (message.equals("You win!")) {
+            winLabel.setVisible(true);
+            loseLabel.setVisible(false);
+        }
 
-    void endGame() {
-        tcpConnection = null;
-        player = null;
-        opponent = null;
+        if (message.equals("You lose!")) {
+            loseLabel.setVisible(true);
+            winLabel.setVisible(false);
+        }
+    }
+    void endGame(String message) {
+        canvas.setFocusTraversable(false);
         gameAnchor.setVisible(false);
         startAnchor.setVisible(true);
+        loseLabel.setVisible(false);
+        winLabel.setVisible(false);
+        iplabel.setVisible(false);
+        try {
+            tcpConnection.close();
+        } catch (IOException | NullPointerException e) {
+        }
+        try {
+            player.attackedThread.stop();
+        } catch (NullPointerException e) {
+
+        }
+        tcpConnection = null;
+//        player = null;
+//        opponent = null;
     }
     @FXML
     void initialize() {
 
+//        iplabel.setText("32332443243324432");
     }
 }
