@@ -6,14 +6,20 @@ import com.example.coursework.gameobjects.Player;
 import com.example.coursework.handlers.KeyInputHandler;
 import com.example.coursework.handlers.MouseInputHandler;
 import com.example.coursework.network.TCPConnection;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,13 +29,60 @@ public class GameController {
     private GraphicsContext context;
     private EventHandler<KeyEvent> keyEventHandler;
     private EventHandler<MouseEvent> mouseEventHandler;
-    private final TCPConnection tcpConnection;
+    private TCPConnection tcpConnection;
     private PlayerDto opponent;
     private Player player;
     private PlayerMapper playerMapper;
+    private int gameLimit = -10;
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private AnchorPane connectAnchor;
+    @FXML
+    private AnchorPane gameAnchor;
+    @FXML
+    private Label iplabel;
+    @FXML
+    private TextField ipTextField;
+    @FXML
+    private AnchorPane startAnchor;
 
-    public GameController(TCPConnection tcpConnection) {
-        this.tcpConnection = tcpConnection;
+    @FXML
+    void onConnectGameButton(ActionEvent event) {
+
+        var strings = ipTextField.getText().split(":");
+
+        new Thread(()->{
+            tcpConnection = new TCPConnection(strings[0],Integer.parseInt(strings[1]));
+            tcpConnection.connect();
+            initGame();
+        }).start();
+
+        connectAnchor.setVisible(false);
+
+    }
+
+    @FXML
+    void onConnectGame(ActionEvent event) {
+        startAnchor.setVisible(false);
+        connectAnchor.setVisible(true);
+        ipTextField.setText("192.168.56.1:");
+    }
+
+    @FXML
+    void onCreateGame(ActionEvent event) {
+        int port = (int) (Math.random() * 1000 + 9000);
+        try {
+            String localhost = InetAddress.getLocalHost().getHostAddress();
+            new Thread(()->{
+                tcpConnection = new TCPConnection(localhost,port);
+                tcpConnection.createServer();
+                initGame();
+            }).start();
+            iplabel.setText("Game opened at " + localhost + ":" + port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     private void draw() {
@@ -55,14 +108,20 @@ public class GameController {
         context.fillText("Me " + -opponent.score, 10, 20);
         context.fillText("Opp " + -player.score, 10, 50);
     }
+
     private void receivingObjects() {
         Timer timer = new Timer();
-
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
                     var opp = tcpConnection.receivingObject(playerMapper.toPlayerDto(player));
+                    if (opp == null) {
+                        System.out.println("connection refused");
+
+                        cancel();
+                        return;
+                    }
                     opponent.bullets = opp.bullets;
                     opponent.hp = opp.hp;
                     opponent.score = opp.score;
@@ -71,19 +130,16 @@ public class GameController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
-
         },0,2);
-
     }
 
-    @FXML
-    void initialize() {
+    void initGame() {
+        gameAnchor.setVisible(true);
+        startAnchor.setVisible(false);
         playerMapper = new PlayerMapper();
         opponent = new PlayerDto();
         player = new Player(200, canvas.getHeight() - 50, opponent);
-//        tcpConnection = new TCPConnection();
         context = canvas.getGraphicsContext2D();
         keyEventHandler = new KeyInputHandler(player);
         mouseEventHandler = new MouseInputHandler(player);
@@ -98,5 +154,33 @@ public class GameController {
                 draw();
             }
         }, 0, 20);
+
+        Timer winTimer = new Timer();
+        receivingObjects();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (opponent.score <= gameLimit) {
+                    canvas.setFocusTraversable(false);
+                    return;
+                }
+                if (player.score <= gameLimit) {
+                    canvas.setFocusTraversable(false);
+                    return;
+                }
+            }
+        }, 0, 20);
+    }
+
+    void endGame() {
+        tcpConnection = null;
+        player = null;
+        opponent = null;
+        gameAnchor.setVisible(false);
+        startAnchor.setVisible(true);
+    }
+    @FXML
+    void initialize() {
+
     }
 }

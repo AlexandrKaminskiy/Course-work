@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class TCPConnection {
     public ServerSocket serverSocket;
-    private Socket socket;
+    public Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private ByteArrayOutputStream baos;
@@ -24,16 +24,18 @@ public class TCPConnection {
         this.port = port;
     }
 
-    public TCPConnection() {
 
-    }
 
-    public void createServer() throws IOException {
+    public void createServer(){
 
-        serverSocket = new ServerSocket(port);
-        socket = serverSocket.accept();
-        dos = new DataOutputStream(socket.getOutputStream());
-        dis = new DataInputStream(socket.getInputStream());
+        try {
+            serverSocket = new ServerSocket(port);
+            socket = serverSocket.accept();
+            dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -71,9 +73,20 @@ public class TCPConnection {
             dos.write(sendingBuffer);
             return o;
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            if (oos != null) {
+                oos.close();
+            }
+            ois.close();
+            baos.close();
+            bais.close();
+            dis.close();
+            dos.close();
+            socket.close();
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
+            return null;
         }
-        return null;
     }
 
 }
