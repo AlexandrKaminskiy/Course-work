@@ -81,6 +81,11 @@
                <font>
                   <Font name="Agency FB" size="65.0" />
                </font></Label>
+            <Button fx:id="backButton" layoutX="564.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBackButtonClick" opacity="0.88" prefHeight="26.0" prefWidth="22.0" text="X">
+               <font>
+                  <Font name="Arial" size="14.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

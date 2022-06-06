@@ -23,17 +23,17 @@ public class KeyInputHandler implements EventHandler<KeyEvent> {
             System.out.println(activeKeys);
             for (var key : activeKeys) {
                 switch (key.getCode()) {
-                    case 87 -> player.jump();
-                    case 65 -> player.moveX(-1);
-                    case 68 -> player.moveX(1);
+                    case 87: player.jump();break;
+                    case 65: player.moveX(-1);break;
+                    case 68: player.moveX(1);break;
                 }
             }
         } else if (KeyEvent.KEY_RELEASED.equals(event.getEventType())) {
 
             switch (event.getCode().getCode()) {
 
-                case 65 -> player.slowDown(-1);
-                case 68 -> player.slowDown(1);
+                case 65: player.slowDown(-1);break;
+                case 68: player.slowDown(1);break;
             }
             activeKeys.remove(event.getCode());
         }

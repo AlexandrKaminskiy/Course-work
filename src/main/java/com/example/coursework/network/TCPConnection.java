@@ -30,7 +30,6 @@ public class TCPConnection {
             dos = new DataOutputStream(socket.getOutputStream());
             dis = new DataInputStream(socket.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
     }
@@ -71,7 +70,6 @@ public class TCPConnection {
             dos.write(sendingBuffer);
             return o;
         } catch (IOException | ClassNotFoundException | NullPointerException e) {
-            System.out.println("there");
             close();
             return null;
         }

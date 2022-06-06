@@ -81,7 +81,11 @@ public class GameController {
         connectAnchor.setVisible(false);
 
     }
-
+    @FXML
+    void onBackButtonClick(ActionEvent event) {
+        startAnchor.setVisible(true);
+        connectAnchor.setVisible(false);
+    }
     @FXML
     void onConnectGame(ActionEvent event) {
         startAnchor.setVisible(false);

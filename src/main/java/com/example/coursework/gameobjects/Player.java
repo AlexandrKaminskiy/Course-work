@@ -39,7 +39,6 @@ public class Player extends MovableObject {
         attackedThread = new Thread(() -> {
             while (true) {
                 if(collisionControl.checkPlayerGetDamaged(xPos,yPos)) {
-                    System.out.println("get damage");
                     xPos = 200;
                     yPos = 50;
                     hasProp = false;
@@ -79,7 +78,6 @@ public class Player extends MovableObject {
 
     public void attack(double mouseX, double mouseY) {
         bullets.add(new Bullet(xPos + playerWidth / 2,yPos + playerHeight / 2,mouseX,mouseY,this, opponent));
-        System.out.println(bullets.size());
     }
 
     public void jump() {

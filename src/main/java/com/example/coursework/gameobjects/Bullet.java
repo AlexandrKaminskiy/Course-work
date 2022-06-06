@@ -54,11 +54,9 @@ public class Bullet extends MovableObject {
                     CollisionsState c = collisionControl.checkCollision(futX, futY, xPos, yPos);
                     if (c.equals(CollisionsState.WITH_IMM)) {
                         nextIterDelete = true;
-                        System.out.println("with imm");
                     } else if (c.equals(CollisionsState.WITH_PLAYER)) {
                         nextIterDelete = true;
                         isHit = true;
-                        System.out.println("with pl");
                     }
 
                     xPos += xSpeed * dt;

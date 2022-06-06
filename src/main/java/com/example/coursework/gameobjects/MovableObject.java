@@ -82,7 +82,6 @@ public class MovableObject implements Serializable {
             public void run() {
                 double currentY = yPos;
                 if (!hasProp) {
-                    System.out.println(yPos);
                     ySpeed -= g * dt;
 
                     yPos -= ySpeed * dt;
@@ -140,10 +139,10 @@ public class MovableObject implements Serializable {
     protected double collisionCoord(int side, double curCrd, double futCrd, ImmovableObject immObj) {
         double c = 0;
         switch (side) {
-            case 0 -> c = immObj.getX1();
-            case 1 -> c = immObj.getY1();
-            case 2 -> c = immObj.getX2();
-            case 3 -> c = immObj.getY2();
+            case 0: c = immObj.getX1();break;
+            case 1: c = immObj.getY1();break;
+            case 2: c = immObj.getX2();break;
+            case 3: c = immObj.getY2();break;
         }
 
         double a = c - curCrd;
