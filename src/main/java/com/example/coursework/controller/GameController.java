@@ -163,6 +163,14 @@ public class GameController {
                     opponent.score = opp.score;
                     opponent.xPos = opp.xPos;
                     opponent.yPos = opp.yPos;
+                    for (var bullet : opponent.bullets) {
+                        if (bullet.isHit) {
+                            player.getDamaged = true;
+//                            player.getDamaged();
+                        }
+                    }
+                    opponent.bullets.stream().forEach(e -> {if (e.isHit) System.out.println(e.isHit);});
+//                    System.out.println(opponent.bullets);
                 } catch (Exception e) {
                     endGame("You winn!");
                     if (opponent.score == gameLimit) {
@@ -184,8 +192,8 @@ public class GameController {
     }
 
     void initGame() {
-
         canvas.setFocusTraversable(true);
+        connectAnchor.setVisible(false);
         gameAnchor.setVisible(true);
         startAnchor.setVisible(false);
         playerMapper = new PlayerMapper();

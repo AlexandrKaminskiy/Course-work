@@ -13,7 +13,7 @@ public class PlayerMapper {
         playerDto.hp = player.HP;
         playerDto.bullets = new ArrayList<>();
         for (var bullet : player.bullets) {
-            playerDto.bullets.add(new BulletDto(bullet.xPos, bullet.yPos, bullet.futX, bullet.futY));
+            playerDto.bullets.add(new BulletDto(bullet.xPos, bullet.yPos, bullet.futX, bullet.futY, bullet.isHit));
         }
         return playerDto;
     }

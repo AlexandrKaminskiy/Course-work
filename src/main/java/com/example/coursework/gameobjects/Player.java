@@ -12,6 +12,7 @@ public class Player extends MovableObject {
     private final transient double startYSpeed = 40;
     private final transient double startXSpeed = 1;
     private final transient double maxXSpeed = 7;
+    public boolean getDamaged;
     private transient double acc;
     private transient boolean isMoving;
     private transient Timer timer;
@@ -29,7 +30,8 @@ public class Player extends MovableObject {
         this.xPos = xPos;
         this.yPos = yPos;
         bulletControl();
-        hasAttackedControl();
+        getDamaged();
+//        hasAttackedControl();
 //        immovableObjects.add(new ImmovableObject(opponent.xPos, opponent.xPos + playerWidth,opponent.yPos, opponent.yPos + playerHeight));
     }
 
@@ -63,8 +65,12 @@ public class Player extends MovableObject {
             public void run() {
                 for (int i = 0; i < bullets.size(); i++) {
                     if (!bullets.get(i).isPresent()) {
-                        bullets.remove(i);
-                        i--;
+                        if (bullets.get(i).isHit) {
+                            bullets.get(i).isHit = false;
+                        } else {
+                            bullets.remove(i);
+                            i--;
+                        }
                     }
                 }
             }
@@ -143,4 +149,29 @@ public class Player extends MovableObject {
     }
 
 
+    public void getDamaged() {
+        attackedThread = new Thread(()->{
+            while (true) {
+                if (getDamaged) {
+                    xPos = 200;
+                    yPos = 50;
+                    hasProp = false;
+                    score--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    getDamaged = false;
+                } else
+                try {
+                    Thread.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        attackedThread.start();
+
+    }
 }

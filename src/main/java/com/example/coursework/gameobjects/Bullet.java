@@ -16,6 +16,7 @@ public class Bullet extends MovableObject {
     public double futX;
     public double futY;
     private boolean isInit;
+    public boolean isHit;
     public boolean isPresent() {
         return isPresent;
     }
@@ -56,6 +57,7 @@ public class Bullet extends MovableObject {
                         System.out.println("with imm");
                     } else if (c.equals(CollisionsState.WITH_PLAYER)) {
                         nextIterDelete = true;
+                        isHit = true;
                         System.out.println("with pl");
                     }
 

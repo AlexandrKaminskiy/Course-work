@@ -56,8 +56,7 @@ public class TCPConnection {
         try {
             byte[] receivingBuffer = new byte[1024];
             int i = dis.read(receivingBuffer);
-//            System.out.println(i);
-//            System.out.println(Arrays.toString(receivingBuffer));
+
             if (i == -1) {
                 throw new IOException();
             }
